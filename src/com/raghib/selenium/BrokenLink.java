@@ -12,6 +12,8 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.testng.asserts.SoftAssert;
 
+import io.github.bonigarcia.wdm.WebDriverManager;
+
 public class BrokenLink {
 
 	public static String soapUICssSelector = "a[href*='soapui']";
@@ -24,7 +26,8 @@ public class BrokenLink {
 
 	public static void main(String[] args) throws MalformedURLException, IOException, InterruptedException {
 		// Set the driver path
-		System.setProperty("webdriver.chrome.driver", System.getProperty("user.dir") + "\\Driver\\chromedriver.exe");
+		//System.setProperty("webdriver.chrome.driver", System.getProperty("user.dir") + "\\Driver\\chromedriver.exe");
+		WebDriverManager.chromedriver().setup();
 		WebDriver driver = new ChromeDriver();
 		driver.manage().window().maximize();
 		driver.get("https://rahulshettyacademy.com/AutomationPractice/");
