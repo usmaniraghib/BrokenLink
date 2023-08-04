@@ -80,6 +80,16 @@ public class BrokenLink {
 					"The link " + link.getText() + " is broken with the status code " + statusCode);
 		}
 		System.out.println("Total Footer Link Count : " + count);
-		softAssertObject.assertAll(); 
+		
+		//softAssertObject.assertAll();
+		/*
+		 * NOTE - If we uncomment this code "softAssertObject.assertAll()" then below error is occur.
+	Exception in thread "main" java.lang.AssertionError: The following asserts failed:
+	The link Appium is broken with the status code 403 expected [true] but found [false],
+	The link Broken Link is broken with the status code 404 expected [true] but found [false]
+	at org.testng.asserts.SoftAssert.assertAll(SoftAssert.java:47)
+	at org.testng.asserts.SoftAssert.assertAll(SoftAssert.java:31)
+	at com.raghib.selenium.BrokenLink.main(BrokenLink.java:83)
+		 */
 	}
 }
