@@ -2,6 +2,12 @@ package com.raghib.link;
 
 /**
  * Reference:-
+ * C:\STUDY_DATA\TESTING\New folder_2\1-B_SELANIUM\
+ * 0.1Udemy - Selenium WebDriver with Java -Basics to Advanced+Frameworks\
+ * 14. Miscellaneous topics in Selenium WebDriver
+ * 
+ * https://www.youtube.com/watch?v=jBa9VaCflAw
+ * 
  * https://stackoverflow.com/questions/34056374/maven-compile-error-package-org-testng-asserts-does-not-exist
  * 
  * I found out that removing scope inside testng dependency worked. 
@@ -31,58 +37,88 @@ import org.testng.asserts.SoftAssert;
 import com.raghib.selenium.BaseClass;
 
 public class BrokenLink extends BaseClass {
+	
 	public static WebDriver driver;
 	public static String browserName = "chrome";
 	public static String browserVersion = "116";
 
 	public static String url = "https://rahulshettyacademy.com/AutomationPractice/";
 
-	public static String soapUICssSelector = "a[href*='soapui']";
+	//public static String soapUICssSelector = "a[href*='soapui']";
 	public static String brokenLinkCssSelector = "a[href*='brokenlink']";
 	public static String allFooterLinks = "li[class='gf-li'] a";
 	public static HttpURLConnection connection = null;
 	public static int statusCode = 0;
 	public static int count = 0;
 	public static SoftAssert softAssertObject = null;
-
+	
 	public static void main(String[] args) throws MalformedURLException, IOException, InterruptedException {
 		// Chrome Browser
 		driver = BaseClass.getDriver(browserName, browserVersion);
 		driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(20));
 		driver.manage().window().maximize();
-		driver.get(url);
+		driver.get(url);		
+		//singleLinkInFooter();
+		allLinkInFooter();	
+		//usingSoftAssertWithoutError();
+		//usingSoftAssertWithError();
+	}
+	
+	public static void singleLinkInFooter() throws MalformedURLException, IOException, InterruptedException {
+		// FOR SINGLE LINK IN FOOTER
+		String urlBrokenLinkCssSelector = driver.findElement(By.cssSelector(brokenLinkCssSelector))
+				.getAttribute("href");
+		System.out.println(urlBrokenLinkCssSelector);
 
-		// FOR SINGLE LINKS IN FOOTER
-
-		// String url =
-		// driver.findElement(By.cssSelector(soapUICssSelector)).getAttribute("href");
-		/*
-		 * String url =
-		 * driver.findElement(By.cssSelector(brokenLinkCssSelector)).getAttribute("href"
-		 * ); System.out.println(url);
-		 * 
-		 * //HTTP METHODS -> GET / POST /PUT / DELETE / HEAD / TRACE / OPTION
-		 * 
-		 * connection = (HttpURLConnection) new URL(url).openConnection();
-		 * connection.setRequestMethod("HEAD"); connection.connect(); int statusCode =
-		 * connection.getResponseCode();
-		 * System.out.println("Request Status Code : "+statusCode);
-		 * BaseClass.quitDriver();
-		 */
-
+		// HTTP METHODS -> GET / POST /PUT / DELETE / HEAD / TRACE / OPTION
+		connection = (HttpURLConnection) new URL(urlBrokenLinkCssSelector).openConnection();
+		connection.setRequestMethod("HEAD");
+		connection.connect();
+		int statusCode = connection.getResponseCode();
+		System.out.println("Request Status Code : " + statusCode);
+		BaseClass.quitDriver();
+	}
+	
+	public static void allLinkInFooter() throws MalformedURLException, IOException {
 		// FOR ALL THE FOOTER LINKS
-		/*
-		 * List<WebElement> links = driver.findElements(By.cssSelector(allFooterLinks));
-		 * for (WebElement link : links) { String allURL = link.getAttribute("href");
-		 * connection = (HttpURLConnection) new URL(allURL).openConnection();
-		 * connection.setRequestMethod("HEAD"); connection.connect(); statusCode =
-		 * connection.getResponseCode(); count++; if (statusCode >= 400) {
-		 * System.out.println("The link " + link.getText() +
-		 * " is broken with the status code " + statusCode); } }
-		 * System.out.println("Total Footer Link Count : "+count); Thread.sleep(5000);
-		 * BaseClass.quitDriver();
-		 */
+		List<WebElement> links = driver.findElements(By.cssSelector(allFooterLinks));
+		for (WebElement link : links) {
+			String allURL = link.getAttribute("href");
+			connection = (HttpURLConnection) new URL(allURL).openConnection();
+			connection.setRequestMethod("HEAD");
+			connection.connect();
+			statusCode = connection.getResponseCode();
+			count++;
+			if (statusCode >= 400) {
+				System.out.println("The link " + link.getText() + " is broken with the status code " + statusCode);
+			}
+		}
+		System.out.println("Total Footer Link Count : " + count);
+		BaseClass.quitDriver();
+	}
+	
+	public static void usingSoftAssertWithoutError() throws MalformedURLException, IOException, InterruptedException {
+		// FOR ALL THE FOOTER LINKS
+		softAssertObject = new SoftAssert();
+		List<WebElement> links = driver.findElements(By.cssSelector(allFooterLinks));
+		for (WebElement link : links) {
+			String allURL = link.getAttribute("href");
+			connection = (HttpURLConnection) new URL(allURL).openConnection();
+			connection.setRequestMethod("HEAD");
+			connection.connect();
+			statusCode = connection.getResponseCode();
+			count++;
+			System.out.println("URL : " + allURL);
+			System.out.println("Status Code : " + statusCode);
 
+			softAssertObject.assertTrue(statusCode < 400,
+					"The link " + link.getText() + " is broken with the status code " + statusCode);
+		}
+		System.out.println("Total Footer Link Count : " + count);
+		BaseClass.quitDriver();
+	}
+	
+	public static void usingSoftAssertWithError() throws MalformedURLException, IOException, InterruptedException {
 		// FOR ALL THE FOOTER LINKS
 		softAssertObject = new SoftAssert();
 		List<WebElement> links = driver.findElements(By.cssSelector(allFooterLinks));
@@ -101,7 +137,6 @@ public class BrokenLink extends BaseClass {
 		}
 		System.out.println("Total Footer Link Count : " + count);
 
-		// softAssertObject.assertAll();
 		/*
 		 * NOTE - If we uncomment this code "softAssertObject.assertAll()" then below
 		 * error is occur. Exception in thread "main" java.lang.AssertionError: The
@@ -112,5 +147,7 @@ public class BrokenLink extends BaseClass {
 		 * org.testng.asserts.SoftAssert.assertAll(SoftAssert.java:31) at
 		 * com.raghib.selenium.BrokenLink.main(BrokenLink.java:83)
 		 */
+		softAssertObject.assertAll();
+		BaseClass.quitDriver();
 	}
 }
